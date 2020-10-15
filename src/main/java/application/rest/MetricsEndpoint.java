@@ -6,6 +6,7 @@ import java.io.Writer;
 import java.util.Date;
 import java.util.Enumeration;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.common.TextFormat;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/")
 public class MetricsEndpoint {
 

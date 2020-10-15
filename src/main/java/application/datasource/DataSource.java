@@ -3,7 +3,6 @@ package application.datasource;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +14,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonSerializer;
 
 import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import application.json.JSONObjectFactory;
@@ -24,7 +22,10 @@ import application.models.EmploymentInfo;
 
 public class DataSource {
     private static DataSource instance = null;
-    private List<EmploymentInfo> dataset = new ArrayList<EmploymentInfo>();
+    private List<EmploymentInfo> dataset = null;
+
+    public static String DATASET_URL = "https://raw.githubusercontent.com/datasets/employment-us/master/data/aat1.csv";
+    // public static String DATASET_URL = "https://datahub.io/core/employment-us/r/0.csv";
 
     private DataSource() {
     }
@@ -38,15 +39,16 @@ public class DataSource {
     }
 
     public List<EmploymentInfo> fetchDataset() {
-        List<EmploymentInfo> dataset = new ArrayList<EmploymentInfo>();
+        if ( this.dataset == null ) {
+            this.dataset = new ArrayList<EmploymentInfo>();
+        }
 
-        String datasetURL = "https://raw.githubusercontent.com/datasets/employment-us/master/data/aat1.csv";
-        // String datasetURL = "https://datahub.io/core/employment-us/r/0.csv";
+        System.out.println("Fetch dataset...");
 
         EmploymentInfo datasetRow = null;
 
         try {
-            InputStreamReader in = new InputStreamReader(new URL(datasetURL).openStream());
+            InputStreamReader in = new InputStreamReader(new URL(DATASET_URL).openStream());
             Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
             for (CSVRecord record : records) {
                 // System.out.println("Row " + record);                
@@ -78,7 +80,7 @@ public class DataSource {
 
         // System.out.println("dataset:" + dataset);
 
-        return dataset;
+        return this.dataset;
     }
 
     // public Song findSong(int id) {
@@ -96,77 +98,149 @@ public class DataSource {
     //     return song;
     // }
 
-    // public Song findMostVotedSong() {
-    //     List<Song> list = this.songs;
+    public EmploymentInfo findInfoBiggestLaborForcePercent() {
+        if ( this.dataset == null ) {
+            fetchDataset();
+        }
+        List<EmploymentInfo> list = this.dataset;
+        if ( this.dataset == null ) {
+            return null;
+        }
 
-    //     Song song = null;
-    //     int maxVotes = 0;
+        EmploymentInfo info = null;
+        double maxPercent = 0;
 
-    //     for(Song s: list){
-    //         if ( s.getRatingCount() > maxVotes ) {
-    //             song = s;
-    //             maxVotes = s.getRatingCount();
-    //         }
-    //     }
+        for(EmploymentInfo s: list){
+            if ( s.getPopulation_percent() > maxPercent ) {
+                info = s;
+                maxPercent = s.getPopulation_percent();
+            }
+        }
 
-    //     System.out.println("Most voted song: "+ song);
+        System.out.println("Year with biggest labor force percent: "+ (info != null ? info.getYear() : 0));
 
-    //     return song;
-    // }
+        return info;
+    }
 
-    // public Song findLeastVotedSong() {
-    //     List<Song> list = this.songs;
+    public EmploymentInfo findInfoSmallestLaborForcePercent() {
+        if ( this.dataset == null ) {
+            fetchDataset();
+        }
+        List<EmploymentInfo> list = this.dataset;
+        if ( this.dataset == null ) {
+            return null;
+        }
 
-    //     Song song = null;
-    //     int minVotes = 10000000;
+        EmploymentInfo info = null;
+        double minPercent = 101;
 
-    //     for(Song s: list){
-    //         if ( s.getRatingCount() < minVotes ) {
-    //             song = s;
-    //             minVotes = s.getRatingCount();
-    //         }
-    //     }
+        for(EmploymentInfo s: list){
+            if ( s.getPopulation_percent() < minPercent ) {
+                info = s;
+                minPercent = s.getPopulation_percent();
+            }
+        }
 
-    //     System.out.println("Least voted song: "+ song);
+        System.out.println("Year with smallest labor force percent: "+ (info != null ? info.getYear() : 0));
 
-    //     return song;
-    // }
+        return info;
+    }
 
-    // public Song findBestRatedSong() {
-    //     List<Song> list = this.songs;
+    public EmploymentInfo findInfoBiggestEmployedPercent() {
+        if ( this.dataset == null ) {
+            fetchDataset();
+        }
+        List<EmploymentInfo> list = this.dataset;
+        if ( this.dataset == null ) {
+            return null;
+        }
 
-    //     Song song = null;
-    //     double maxRating = 0;
+        EmploymentInfo info = null;
+        double maxPercent = 0;
 
-    //     for(Song s: list){
-    //         if ( s.getRating() > maxRating ) {
-    //             song = s;
-    //             maxRating = s.getRating();
-    //         }
-    //     }
+        for(EmploymentInfo s: list){
+            if ( s.getEmployed_percent() > maxPercent ) {
+                info = s;
+                maxPercent = s.getEmployed_percent();
+            }
+        }
 
-    //     System.out.println("Best rated song: "+ song);
+        System.out.println("Year with biggest employed percent: "+ (info != null ? info.getYear() : 0));
 
-    //     return song;
-    // }
+        return info;
+    }
 
-    // public Song findLowestRatedSong() {
-    //     List<Song> list = this.songs;
+    public EmploymentInfo findInfoSmallestEmployedPercent() {
+        if ( this.dataset == null ) {
+            fetchDataset();
+        }
+        List<EmploymentInfo> list = this.dataset;
+        if ( this.dataset == null ) {
+            return null;
+        }
 
-    //     Song song = null;
-    //     double minRating = 10;
+        EmploymentInfo info = null;
+        double minPercent = 101;
 
-    //     for(Song s: list){
-    //         if ( s.getRating() < minRating ) {
-    //             song = s;
-    //             minRating = s.getRating();
-    //         }
-    //     }
+        for(EmploymentInfo s: list){
+            if ( s.getEmployed_percent() < minPercent ) {
+                info = s;
+                minPercent = s.getEmployed_percent();
+            }
+        }
 
-    //     System.out.println("Lowest rated song: "+ song);
+        System.out.println("Year with smallest employed percent: "+ (info != null ? info.getYear() : 0));
 
-    //     return song;
-    // }
+        return info;
+    }
+
+    public EmploymentInfo findInfoBiggestUnemployedPercent() {
+        if ( this.dataset == null ) {
+            fetchDataset();
+        }
+        List<EmploymentInfo> list = this.dataset;
+        if ( this.dataset == null ) {
+            return null;
+        }
+
+        EmploymentInfo info = null;
+        double maxPercent = 0;
+
+        for(EmploymentInfo s: list){
+            if ( s.getUnemployed_percent() > maxPercent ) {
+                info = s;
+                maxPercent = s.getUnemployed_percent();
+            }
+        }
+
+        System.out.println("Year with biggest unemployed percent: "+ (info != null ? info.getYear() : 0));
+
+        return info;
+    }
+
+    public EmploymentInfo findInfoSmallestUnemployedPercent() {
+        if ( this.dataset == null ) {
+            fetchDataset();
+        }
+        List<EmploymentInfo> list = this.dataset;
+        if ( this.dataset == null ) {
+            return null;
+        }
+
+        EmploymentInfo info = null;
+        double minPercent = 101;
+
+        for(EmploymentInfo s: list){
+            if ( s.getUnemployed_percent() < minPercent ) {
+                info = s;
+                minPercent = s.getUnemployed_percent();
+            }
+        }
+
+        System.out.println("Year with smallest unemployed percent: "+ (info != null ? info.getYear() : 0));
+
+        return info;
+    }
 
     public static void main(String[] args) {
         Gson gson = new Gson();
@@ -177,10 +251,20 @@ public class DataSource {
         // a.put("dataset", getInstance().fetchDataset());
         // System.out.println(gson.toJson(a));
 
-        JsonArray array = JSONObjectFactory.getInstance().generateJSONArray(getInstance().fetchDataset());
-        HashMap<String, JsonArray> map = new HashMap<String, JsonArray>();
-        map.put("dataset", array);
-        System.out.println(gson.toJson(map));
+        // JsonArray array = JSONObjectFactory.getInstance().generateJSONArray(getInstance().fetchDataset());
+        // HashMap<String, JsonArray> map = new HashMap<String, JsonArray>();
+        // map.put("dataset", array);
+        // System.out.println(gson.toJson(map));
+
+        getInstance().findInfoBiggestLaborForcePercent();
+        getInstance().findInfoSmallestLaborForcePercent();
+
+        getInstance().findInfoBiggestEmployedPercent();
+        getInstance().findInfoSmallestEmployedPercent();
+
+        getInstance().findInfoBiggestUnemployedPercent();
+        getInstance().findInfoSmallestUnemployedPercent();
+
 
         // GsonBuilder gsonBuilder = new GsonBuilder();
         // JsonSerializer<EmploymentInfo> serializer = new EmploymentInfoSerializer();

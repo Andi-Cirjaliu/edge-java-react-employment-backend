@@ -9,18 +9,15 @@ public class EmploymentMetrics {
     public static final Gauge statistics = Gauge.build().name("employment_statistics").help("Employment statistics").labelNames("statistic").register();
 
     public static void collectEmploymentStatistics() {
-        statistics.labels("total_years").set(DataSource.getInstance().fetchDataset().size());
+        // statistics.labels("total_years").set(DataSource.getInstance().fetchDataset().size());
 
-        // statistics.labels("most_voted_song").set(DataSource.getInstance().findMostVotedSong().getId());
-        // statistics.labels("max_votes_song").set(DataSource.getInstance().findMostVotedSong().getRatingCount());
+        statistics.labels("biggest_labor_force_percent_year").set(DataSource.getInstance().findInfoBiggestLaborForcePercent().getYear());
+        statistics.labels("smallest_labor_force_percent_year").set(DataSource.getInstance().findInfoSmallestLaborForcePercent().getYear());
 
-        // statistics.labels("least_voted_song").set(DataSource.getInstance().findLeastVotedSong().getId());
-        // statistics.labels("min_votes_song").set(DataSource.getInstance().findLeastVotedSong().getRatingCount());
+        statistics.labels("biggest_employed_percent_year").set(DataSource.getInstance().findInfoBiggestEmployedPercent().getYear());
+        statistics.labels("smallest_employed_percent_year").set(DataSource.getInstance().findInfoSmallestEmployedPercent().getYear());
 
-        // statistics.labels("best_rated_song").set(DataSource.getInstance().findBestRatedSong().getId());
-        // statistics.labels("max_rating_song").set(DataSource.getInstance().findBestRatedSong().getRating());
-
-        // statistics.labels("lowest_rated_song").set(DataSource.getInstance().findLowestRatedSong().getId());
-        // statistics.labels("min_rating_song").set(DataSource.getInstance().findLowestRatedSong().getRating());
+        statistics.labels("biggest_unemployed_percent_year").set(DataSource.getInstance().findInfoBiggestUnemployedPercent().getYear());
+        statistics.labels("smallest_unemployed_percent_year").set(DataSource.getInstance().findInfoSmallestUnemployedPercent().getYear());
     }
 }

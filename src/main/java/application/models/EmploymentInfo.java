@@ -109,5 +109,15 @@ public class EmploymentInfo {
     public void setNot_in_labor(int not_in_labor) {
         this.not_in_labor = not_in_labor;
     }
+
+    @Override
+    public String toString() {
+        return "EmploymentInfo [agrictulture_ratio=" + agrictulture_ratio + ", employed_percent=" + employed_percent
+                + ", employed_total=" + employed_total + ", labor_force=" + labor_force + ", nonagriculture_ratio="
+                + nonagriculture_ratio + ", not_in_labor=" + not_in_labor + ", population=" + population
+                + ", population_percent=" + population_percent + ", unemployed=" + unemployed + ", unemployed_percent="
+                + unemployed_percent + ", year=" + year + "]";
+    }
+    
     
 }
