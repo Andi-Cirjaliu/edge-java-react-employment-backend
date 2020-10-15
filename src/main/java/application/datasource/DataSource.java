@@ -39,6 +39,11 @@ public class DataSource {
     }
 
     public List<EmploymentInfo> fetchDataset() {
+        if ( this.dataset != null && this.dataset.size() > 0 ) {
+            //use the dataset already loaded because it is static
+            return this.dataset;
+        }
+
         if ( this.dataset == null ) {
             this.dataset = new ArrayList<EmploymentInfo>();
         }
@@ -83,20 +88,26 @@ public class DataSource {
         return this.dataset;
     }
 
-    // public Song findSong(int id) {
-    //     List<Song> list = this.songs;
+    public EmploymentInfo findInfo(int id) {
+        if ( this.dataset == null ) {
+            fetchDataset();
+        }
+        List<EmploymentInfo> list = this.dataset;
+        if ( this.dataset == null ) {
+            return null;
+        }
 
-    //     Song song = null;
+        EmploymentInfo info = null;
 
-    //     for(int i=0; i< list.size();i++){
-    //         if ( list.get(i).getId() == id ) {
-    //             song = list.get(i);
-    //             break;
-    //         }
-    //     }
+        for(int i=0; i< list.size();i++){
+            if ( list.get(i).getId() == id ) {
+                info = list.get(i);
+                break;
+            }
+        }
 
-    //     return song;
-    // }
+        return info;
+    }
 
     public EmploymentInfo findInfoBiggestLaborForcePercent() {
         if ( this.dataset == null ) {
