@@ -3,6 +3,7 @@ package application.datasource;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class DataSource {
 
     public static String DATASET_URL = "/home/student/projects/employment_dataset/employment-us/data/aat1.csv";
     // public static String DATASET_URL = "C:/work/OperatorPlayground/datasets/aat1.csv";
-    // public static String DATASET_URL = "https://raw.githubusercontent.com/datasets/employment-us/master/data/aat1.csv";
+    public static String DATASET_ORIG_URL = "https://raw.githubusercontent.com/datasets/employment-us/master/data/aat1.csv";
     // public static String DATASET_URL = "https://datahub.io/core/employment-us/r/0.csv";
 
     private DataSource() {
@@ -62,27 +63,55 @@ public class DataSource {
 
         EmploymentInfo datasetRow = null;
 
-        try {
-            InputStreamReader in = null;
+        InputStreamReader in = null;
+        Iterable<CSVRecord> records = null;
 
-            if ( DATASET_URL.startsWith("http:") || DATASET_URL.startsWith("https:")) {
+        try {
+            System.out.println("Fetch dataset from " + DATASET_URL);
+            if (DATASET_URL.startsWith("http:") || DATASET_URL.startsWith("https:")) {
                 in = new InputStreamReader(new URL(DATASET_URL).openStream());
             } else {
                 in = new FileReader(DATASET_URL);
             }
 
-            Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
+            // try to parse the dataset
+            records = parseCSV(in);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        if (records == null) {
+            try {
+                // an error occured... try the original URL for dataset
+                System.out.println("Fetch dataset from " + DATASET_ORIG_URL);
+                in = new InputStreamReader(new URL(DATASET_ORIG_URL).openStream());
+                records = parseCSV(in);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        if (records == null) {
+            System.out.println("could not fetch the dataset...");
+            return this.dataset;
+        }
+
+        try {
+            // parse the dataset
             for (CSVRecord record : records) {
-                // System.out.println("Row " + record);                
+                // System.out.println("Row " + record);
                 // String year = record.get("year");
                 // String population = record.get("population");
                 // String population_percent = record.get("population_percent");
-                // System.out.println("year: " + year + ", population: " + population + ", population_percent: " + population_percent);
+                // System.out.println("year: " + year + ", population: " + population + ",
+                // population_percent: " + population_percent);
 
                 datasetRow = new EmploymentInfo();
-                datasetRow.setId((int)record.getRecordNumber());
+                datasetRow.setId((int) record.getRecordNumber());
                 datasetRow.setYear(Integer.parseInt(record.get("year")));
-                datasetRow.setPopulation(Integer.parseInt(record.get("population")));                
+                datasetRow.setPopulation(Integer.parseInt(record.get("population")));
                 datasetRow.setLabor_force(Integer.parseInt(record.get("labor_force")));
                 datasetRow.setPopulation_percent(Double.parseDouble(record.get("population_percent")));
                 datasetRow.setEmployed_total(Integer.parseInt(record.get("employed_total")));
@@ -93,9 +122,9 @@ public class DataSource {
                 datasetRow.setUnemployed_percent(Double.parseDouble(record.get("unemployed_percent")));
                 datasetRow.setNot_in_labor(Integer.parseInt(record.get("not_in_labor")));
 
-                dataset.add(datasetRow);
+                this.dataset.add(datasetRow);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -103,6 +132,20 @@ public class DataSource {
         // System.out.println("dataset:" + dataset);
 
         return this.dataset;
+    }
+
+    private Iterable<CSVRecord> parseCSV(Reader reader ) {
+        System.out.println("parse CSV...");
+
+        Iterable<CSVRecord> records = null;
+        try {
+            records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(reader);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return records;
     }
 
     public EmploymentInfo findInfo(int id) {

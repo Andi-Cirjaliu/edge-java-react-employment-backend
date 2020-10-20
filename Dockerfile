@@ -34,7 +34,6 @@ RUN mkdir /opt/app
 COPY --from=builder /app/target/javaspringapp-1.0-SNAPSHOT.jar /opt/app/app.jar
 
 COPY aat1.csv /opt/app
-#COPY C:/work/OperatorPlayground/datasets/aat1.csv .
 ENV EMPLOYMENT_DATASET_URL /opt/app/aat1.csv
 
 ENTRYPOINT [ "sh", "-c", "java -jar /opt/app/app.jar" ]
