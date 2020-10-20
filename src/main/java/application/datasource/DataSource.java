@@ -1,5 +1,6 @@
 package application.datasource;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -24,10 +25,19 @@ public class DataSource {
     private static DataSource instance = null;
     private List<EmploymentInfo> dataset = null;
 
-    public static String DATASET_URL = "https://raw.githubusercontent.com/datasets/employment-us/master/data/aat1.csv";
+    public static String DATASET_URL = "/home/student/projects/employment_dataset/employment-us/data/aat1.csv";
+    // public static String DATASET_URL = "C:/work/OperatorPlayground/datasets/aat1.csv";
+    // public static String DATASET_URL = "https://raw.githubusercontent.com/datasets/employment-us/master/data/aat1.csv";
     // public static String DATASET_URL = "https://datahub.io/core/employment-us/r/0.csv";
 
     private DataSource() {
+        // System.out.println("Env: " + System.getenv());
+        String datasetURLEnv = System.getenv("EMPLOYMENT_DATASET_URL");
+        System.out.println("Env EMPLOYMENT_DATASET_URL: " + datasetURLEnv);
+        if ( datasetURLEnv != null && ! datasetURLEnv.trim().isEmpty()) {
+            DATASET_URL = datasetURLEnv.trim();
+        } 
+        System.out.println("DATASET_URL: " + DATASET_URL);
     }
 
     public static DataSource getInstance() {
@@ -53,7 +63,14 @@ public class DataSource {
         EmploymentInfo datasetRow = null;
 
         try {
-            InputStreamReader in = new InputStreamReader(new URL(DATASET_URL).openStream());
+            InputStreamReader in = null;
+
+            if ( DATASET_URL.startsWith("http:") || DATASET_URL.startsWith("https:")) {
+                in = new InputStreamReader(new URL(DATASET_URL).openStream());
+            } else {
+                in = new FileReader(DATASET_URL);
+            }
+
             Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
             for (CSVRecord record : records) {
                 // System.out.println("Row " + record);                
@@ -256,25 +273,27 @@ public class DataSource {
     public static void main(String[] args) {
         Gson gson = new Gson();
 
-        // System.out.println(gson.toJson(getInstance().fetchDataset()));
+        DataSource instance = getInstance();
+
+        System.out.println(gson.toJson(instance.fetchDataset()));
 
         // Map<String, List<EmploymentInfo>> a = new HashMap<String, List<EmploymentInfo>>();
-        // a.put("dataset", getInstance().fetchDataset());
+        // a.put("dataset", instance.fetchDataset());
         // System.out.println(gson.toJson(a));
 
-        // JsonArray array = JSONObjectFactory.getInstance().generateJSONArray(getInstance().fetchDataset());
+        // JsonArray array = JSONObjectFactory.getInstance().generateJSONArray(instance.fetchDataset());
         // HashMap<String, JsonArray> map = new HashMap<String, JsonArray>();
         // map.put("dataset", array);
         // System.out.println(gson.toJson(map));
 
-        getInstance().findInfoBiggestLaborForcePercent();
-        getInstance().findInfoSmallestLaborForcePercent();
+        // instance.findInfoBiggestLaborForcePercent();
+        // instance.findInfoSmallestLaborForcePercent();
 
-        getInstance().findInfoBiggestEmployedPercent();
-        getInstance().findInfoSmallestEmployedPercent();
+        // instance.findInfoBiggestEmployedPercent();
+        // instance.findInfoSmallestEmployedPercent();
 
-        getInstance().findInfoBiggestUnemployedPercent();
-        getInstance().findInfoSmallestUnemployedPercent();
+        // instance.findInfoBiggestUnemployedPercent();
+        // instance.findInfoSmallestUnemployedPercent();
 
 
         // GsonBuilder gsonBuilder = new GsonBuilder();
@@ -282,7 +301,7 @@ public class DataSource {
         // gsonBuilder.registerTypeAdapter(EmploymentInfo.class, serializer);
 
         // Gson customGson = gsonBuilder.create();
-        // System.out.println(customGson.toJson(getInstance().fetchDataset())); 
+        // System.out.println(customGson.toJson(instance.fetchDataset())); 
     }
 
 }
