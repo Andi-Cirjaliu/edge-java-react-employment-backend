@@ -1,11 +1,13 @@
 package application.datasource;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +40,14 @@ public class DataSource {
         if ( datasetURLEnv != null && ! datasetURLEnv.trim().isEmpty()) {
             DATASET_URL = datasetURLEnv.trim();
         } 
-        System.out.println("DATASET_URL: " + DATASET_URL);
+        System.out.println("DATASET_URL: <" + DATASET_URL + ">");
+        File f = new File(DATASET_URL);
+        System.out.println("File " + DATASET_URL + " exists: " + f.exists());
+        System.out.println("File " + DATASET_URL + " is file: " + f.isFile());
+        if ( f.exists() ) {
+            System.out.println("File " + DATASET_URL + " parent : " + f.getParentFile());
+            System.out.println("File " + DATASET_URL + " files in directory: " + Arrays.toString(f.getParentFile().list()));
+        }
     }
 
     public static DataSource getInstance() {
@@ -67,7 +76,7 @@ public class DataSource {
         Iterable<CSVRecord> records = null;
 
         try {
-            System.out.println("Fetch dataset from " + DATASET_URL);
+            System.out.println("Fetch dataset from <" + DATASET_URL + ">");
             if (DATASET_URL.startsWith("http:") || DATASET_URL.startsWith("https:")) {
                 in = new InputStreamReader(new URL(DATASET_URL).openStream());
             } else {
@@ -84,7 +93,7 @@ public class DataSource {
         if (records == null) {
             try {
                 // an error occured... try the original URL for dataset
-                System.out.println("Fetch dataset from " + DATASET_ORIG_URL);
+                System.out.println("Fetch dataset from <" + DATASET_ORIG_URL + ">");
                 in = new InputStreamReader(new URL(DATASET_ORIG_URL).openStream());
                 records = parseCSV(in);
             } catch (Exception e) {
