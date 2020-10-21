@@ -41,4 +41,4 @@ spec:
           - name: APPLICATION_NAME
             value: "{{ .Release.Name }}"
           - name: EMPLOYMENT_DATASET_URL
-            value: "/home/student/projects/employment_dataset/employment-us/data/aat1.csv"
+            value: "/opt/app/employment_dataset/employment-us/data/aat1.csv"

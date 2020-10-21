@@ -28,7 +28,7 @@ public class DataSource {
     private static DataSource instance = null;
     private List<EmploymentInfo> dataset = null;
 
-    public static String DATASET_URL = "/home/student/projects/employment_dataset/employment-us/data/aat1.csv";
+    public static String DATASET_URL = "/opt/app/aat1.csv";
     // public static String DATASET_URL = "C:/work/OperatorPlayground/datasets/aat1.csv";
     public static String DATASET_ORIG_URL = "https://raw.githubusercontent.com/datasets/employment-us/master/data/aat1.csv";
     // public static String DATASET_URL = "https://datahub.io/core/employment-us/r/0.csv";
